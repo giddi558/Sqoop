@@ -1,0 +1,83 @@
+#--Sqoop eval tool to perform querying(select,insert,delete or drop) on mysql or anyother(oracle,postgre etc.) databases.
+Sqoop eval \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--query "select * from student" \
+-m 2 \
+--outdir java_files
+
+#Sqoop import to import a single table from Mysql to HDFS.This will import with 2 mapper tasks
+
+Sqoop import \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--target-dir /user/gopalkrishna/sqoop_import \
+-m 2
+--outdir java_files
+
+#--Sqoop import to import all tables from mysql database to HDFS
+#--It will import one by one table with 4 mapper splits otherwise number of mappers mentioned explicitly with -m or --num-mappers
+
+sqoop import-all-tables \
+--connecct "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--target-dir /user/gopalkrishna/sqoop_import \
+--num-mappers 3 \
+--outdir java_files
+
+#--Sqoop import to hive. If we don't specify database then it will import to default database
+
+sqoop import \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--hive-import \
+--hive-table student \
+--create-hive-table \
+--hive-database Test \
+--warehouse-dir /user/hive/warehouse \
+--num-mappers 2 \
+--outdir java_files
+
+#--Sqoop import all tables of mysql database(only a database which is mentioned in the connection string) to Hive
+
+Sqoop import-all-tables \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--hive-import \
+--hive-database Test \
+--warehouse-dir /user/hive/warehouse \
+--num-mappers 2 \
+--outdir java_files
+
+-----Incremental Load using append and lastmodified on incremental parameter. Append can be used on the value which is incremented
+-----continually and lastmodified can be used on the timestamp value column
+#--Sqoop incremental import using append mode. Incre
+
+Sqoop import \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--append \
+--check-column id \
+--incremental append \
+--last-value 400 \
+--outdir java_files
+
+#--Sqoop export from HDFS to mysql database.
+
+Sqoop export \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--export-dir /user/gopalkrishna/sqoop_import/student \
+--batch \
+--outdir java_files
