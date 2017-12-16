@@ -7,7 +7,7 @@ Sqoop eval \
 -m 2 \
 --outdir java_files
 
-#Sqoop import to import a single table from Mysql to HDFS.This will import with 2 mapper tasks
+#--Sqoop import to import a single table from Mysql to HDFS.This will import with 2 mapper tasks
 
 Sqoop import \
 --connect "jdbc:mysql://localhost/Test" \
@@ -27,6 +27,18 @@ sqoop import-all-tables \
 --password root \
 --target-dir /user/gopalkrishna/sqoop_import \
 --num-mappers 3 \
+--outdir java_files
+
+#--Using explict boundary query to import records from mysql to hdfs
+
+sqoop import \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--target-dir /user/gopalkrishna/sqoop_import \
+--boundary-query "select 4,30 from student" \ #--4 is minimum value and 30 is max value which splits records into mapper tasks
+--num-mappers 2 \
 --outdir java_files
 
 #--Sqoop import to hive. If we don't specify database then it will import to default database
@@ -56,8 +68,8 @@ Sqoop import-all-tables \
 --num-mappers 2 \
 --outdir java_files
 
------Incremental Load using append and lastmodified on incremental parameter. Append can be used on the value which is incremented
------continually and lastmodified can be used on the timestamp value column
+#--Incremental Load using append and lastmodified on incremental parameter. Append can be used on the value which is incremented
+#--continually and lastmodified can be used on the timestamp value column
 #--Sqoop incremental import using append mode. Incre
 
 Sqoop import \
@@ -79,5 +91,32 @@ Sqoop export \
 --password root \
 --table student \
 --export-dir /user/gopalkrishna/sqoop_import/student \
+--batch \
+--outdir java_files
+
+#--Sqoop Export Merge-upsert(updateonly or allowinsert)
+#--updateonly will export the records which are being updated records and new records
+#--allowinsert will export the records which are new
+#--If we don't mention any update-mode in the export tool it will by default takes updateonly mode
+
+Sqoop export \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--export-dir /user/gopalkrishna/sqoop_import/student \
+--update-key id \
+--update-mode allowinsert \
+--batch \
+--outdir java_files
+
+Sqoop export \
+--connect "jdbc:mysql://localhost/Test" \
+--username root \
+--password root \
+--table student \
+--export-dir /user/gopalkrishna/sqoop_import/student \
+--update-key id \
+--update-mode updateonly \
 --batch \
 --outdir java_files
