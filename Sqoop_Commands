@@ -1,4 +1,4 @@
-#--Sqoop eval tool to perform querying(select,insert,delete or drop) on mysql or anyother(oracle,postgre etc.) databases.
+#--Sqoop eval tool to perform querying(select,insert,delete or drop) on mysql or anyother(oracle,postgre etc.) relational databases.
 Sqoop eval \
 --connect "jdbc:mysql://localhost/Test" \
 --username root \
@@ -7,7 +7,7 @@ Sqoop eval \
 -m 2 \
 --outdir java_files
 
-#Sqoop import to import a single table from Mysql to HDFS.This will import with 2 mapper tasks
+#Sqoop import to import a single table from Mysql to HDFS.This will import with 2 mapper tasks. By default import tool takes 4 mappers to import data.
 
 Sqoop import \
 --connect "jdbc:mysql://localhost/Test" \
